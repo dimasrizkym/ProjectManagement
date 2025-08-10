@@ -8,6 +8,7 @@ import SignUpPage from "./pages/SignUpPage.tsx";
 import AuthLayout from "./pages/layouts/AuthLayout.tsx";
 import DashboardPage from "./pages/DashboardPage.tsx";
 import PublicRoute from "./routes/PublicRoute.tsx";
+import ProjectPage from "./pages/projects/ProjectPage.tsx";
 
 const root = document.getElementById("root") as HTMLElement;
 
@@ -35,6 +36,7 @@ ReactDOM.createRoot(root).render(
       ))}
       <Route element={<AuthLayout />}>
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/projects" element={<ProjectPage />} />
       </Route>
     </Routes>
   </BrowserRouter>
