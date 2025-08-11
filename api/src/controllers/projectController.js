@@ -33,3 +33,19 @@ export const createProject = async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
+
+export const getAllProjects = async (req, res) => {
+  try {
+    const projects = await Project.find({
+      owner: req.user._id,
+    }).sort({ createdAt: -1 });
+    res
+      .status(200)
+      .json({ message: "Projects retrieved successfully", projects });
+  } catch (error) {
+    console.log("Error retrieving projects:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
