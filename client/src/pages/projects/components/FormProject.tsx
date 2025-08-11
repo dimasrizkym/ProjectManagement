@@ -64,9 +64,10 @@ const formSchema = z
 
 interface FormProjectProps {
   project?: Project;
+  getProjects: () => void;
 }
 
-const FormProject = ({ project }: FormProjectProps) => {
+const FormProject = ({ project, getProjects }: FormProjectProps) => {
   const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [tags, setTags] = useState<tagsOptions[]>([]);
@@ -107,13 +108,20 @@ const FormProject = ({ project }: FormProjectProps) => {
     },
   });
 
+  const url = project ? `/projects/${project._id}/update` : `/projects`;
+  const method = project ? "put" : "post";
+
   const handleForm = async (values: z.infer<typeof formSchema>) => {
     setLoading(true);
     try {
-      const { data } = await apiClient.post("/projects", values);
+      console.log("Method:", method);
+      console.log("URL:", url);
+
+      const { data } = await apiClient[method](url, values);
       toast(data.message);
-      setLoading(false);
       setOpen(false);
+      getProjects();
+      setLoading(false);
     } catch (error: any) {
       toast(error?.response?.data?.message);
       setLoading(false);

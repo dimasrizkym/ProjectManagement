@@ -37,7 +37,7 @@ const ProjectPage = () => {
       <Header title="My Projects" />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="bg-white border-2 border-dashed rounded-lg shadow-sm hover:shadow-lg transition-all p-5 space-y-5 flex justify-center items-center">
-          <FormProject />
+          <FormProject getProjects={getProjects} />
         </div>
 
         {projects.map((project, index) => (
@@ -107,7 +107,7 @@ const ProjectPage = () => {
               {/* options */}
               <div className="flex items-center justify-between">
                 <div>
-                  <FormProject project={project} />
+                  <FormProject project={project} getProjects={getProjects} />
                   <span>Hapus </span>
                 </div>
                 <div className="text-right">Manage Job</div>
