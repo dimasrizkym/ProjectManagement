@@ -24,16 +24,15 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
+// import { useNavigate } from "react-router";
 import z from "zod";
 import { Textarea } from "@/components/ui/textarea";
 import Loading from "@/components/Loading";
 import apiClient from "@/config/axios";
 import { toast } from "sonner";
 import ReactSelect from "react-select";
-import { fi } from "zod/v4/locales";
 
 interface tagsOptions {
   label: string;
@@ -42,11 +41,13 @@ interface tagsOptions {
 
 const formSchema = z
   .object({
-    taskId: z.string().optional().nullable(),
+    projectId: z.string().optional().nullable(),
     title: z.string().min(1, { message: "Title is required" }),
-    description: z.string().min(1, { message: "Description is required" }),
+    description: z
+      .string()
+      .min(10, { message: "Description is required, minimum 10 characters" }),
     priority: z.string().min(1, { message: "Priority is required" }),
-    tag: z.array(z.string().min(1, { message: "Tag is required" })),
+    tags: z.array(z.string().min(1, { message: "Tag is required" })),
     dueDate: z.string().min(1, { message: "Due date is required" }),
   })
   .superRefine((data, ctx) => {
@@ -64,7 +65,7 @@ const FormProject = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [tags, setTags] = useState<tagsOptions[]>([]);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const priorityOptions = [
     { value: "low", label: "Low" },
@@ -92,17 +93,26 @@ const FormProject = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      taskId: null,
+      projectId: null,
       title: "",
       description: "",
       priority: "",
-      tag: [],
+      tags: [],
       dueDate: "",
     },
   });
 
   const handleForm = async (values: z.infer<typeof formSchema>) => {
-    console.log("Form values:", values);
+    setLoading(true);
+    try {
+      const { data } = await apiClient.post("/projects", values);
+      toast(data.message);
+      setLoading(false);
+      setOpen(false);
+    } catch (error: any) {
+      toast(error?.response?.data?.message);
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -157,7 +167,7 @@ const FormProject = () => {
                     name="priority"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Priority"</FormLabel>
+                        <FormLabel>Priority</FormLabel>
                         <FormControl>
                           <Select
                             onValueChange={field.onChange}
@@ -186,7 +196,7 @@ const FormProject = () => {
                   />
                   <FormField
                     control={form.control}
-                    name="tag"
+                    name="tags"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Tags</FormLabel>
