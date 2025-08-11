@@ -24,12 +24,21 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import z from "zod";
 import { Textarea } from "@/components/ui/textarea";
 import Loading from "@/components/Loading";
+import apiClient from "@/config/axios";
+import { toast } from "sonner";
+import ReactSelect from "react-select";
+import { fi } from "zod/v4/locales";
+
+interface tagsOptions {
+  label: string;
+  value: string;
+}
 
 const formSchema = z
   .object({
@@ -37,7 +46,7 @@ const formSchema = z
     title: z.string().min(1, { message: "Title is required" }),
     description: z.string().min(1, { message: "Description is required" }),
     priority: z.string().min(1, { message: "Priority is required" }),
-    tag: z.string().min(1, { message: "Tag is required" }),
+    tag: z.array(z.string().min(1, { message: "Tag is required" })),
     dueDate: z.string().min(1, { message: "Due date is required" }),
   })
   .superRefine((data, ctx) => {
@@ -54,6 +63,7 @@ const formSchema = z
 const FormProject = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [tags, setTags] = useState<tagsOptions[]>([]);
   const navigate = useNavigate();
 
   const priorityOptions = [
@@ -62,6 +72,23 @@ const FormProject = () => {
     { value: "high", label: "High" },
   ];
 
+  const getTags = async () => {
+    try {
+      const { data } = await apiClient.get("/tags");
+      const result = data.map((tag: { tag_name: string }) => {
+        return {
+          label: tag.tag_name,
+          value: tag.tag_name,
+        };
+      });
+
+      setTags(result);
+    } catch (error) {
+      toast("Failed to get tags. Please try again.");
+      console.log(error);
+    }
+  };
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -69,7 +96,7 @@ const FormProject = () => {
       title: "",
       description: "",
       priority: "",
-      tag: "",
+      tag: [],
       dueDate: "",
     },
   });
@@ -78,8 +105,14 @@ const FormProject = () => {
     console.log("Form values:", values);
   };
 
+  useEffect(() => {
+    if (open) {
+      getTags();
+    }
+  }, [open]);
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>Create Project</Button>
       </DialogTrigger>
@@ -146,6 +179,33 @@ const FormProject = () => {
                               )}
                             </SelectContent>
                           </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="tag"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tags</FormLabel>
+                        <FormControl>
+                          <ReactSelect
+                            options={tags}
+                            isMulti
+                            isClearable
+                            placeholder="Select tags"
+                            onChange={(value) => {
+                              value
+                                ? field.onChange(
+                                    value.map(
+                                      (item: { value: string }) => item.value
+                                    )
+                                  )
+                                : [];
+                            }}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

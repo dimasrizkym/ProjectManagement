@@ -3,7 +3,7 @@ import Tags from "../models/Tags.js";
 export const getAllTags = async (req, res) => {
   try {
     const tags = await Tags.find();
-    return res.status(200).json({ tags });
+    res.status(200).json(tags);
   } catch (error) {
     console.error("Error retrieving tags:", error);
     return res.status(500).json({ message: error.message });
