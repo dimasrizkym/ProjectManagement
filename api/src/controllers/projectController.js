@@ -1,6 +1,12 @@
+import Project from "../models/Projects.js";
+import { formatJoiErrors } from "../utils/formatJoiErrors.js";
+import { createProjectSchema } from "../validations/projectValidation.js";
+
 export const createProject = async (req, res) => {
   // validate project data
-  const { error } = projectValidation.validate(req.body, { abortEarly: false });
+  const { error } = createProjectSchema.validate(req.body, {
+    abortEarly: false,
+  });
 
   if (error) {
     const errors = formatJoiErrors(error);
@@ -8,11 +14,10 @@ export const createProject = async (req, res) => {
   }
 
   try {
-    const { title, description, completed, dueDate, tags, priority } = req.body;
+    const { title, description, dueDate, tags, priority } = req.body;
     const project = await Project.create({
       title,
       description,
-      completed,
       dueDate,
       tags,
       priority,

@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const projecrSchema = new mongoose.Schema(
   {
@@ -46,3 +46,6 @@ const projecrSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+const Project = mongoose.model("Projects", projecrSchema);
+export default Project;
