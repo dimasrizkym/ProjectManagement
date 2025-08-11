@@ -7,6 +7,6 @@ import { verifyToken } from "../middleware/verifyToken.js";
 const route = Router();
 route.use("/auth", authenticationRoutes);
 route.use("/tags", tagRoutes);
-route.user("/projects", verifyToken, projectRoutes);
+route.use("/projects", verifyToken, projectRoutes);
 
 export default route;
