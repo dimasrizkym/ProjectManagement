@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
+import DeleteProject from "./components/DeleteProject";
 
 const ProjectPage = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -108,7 +109,10 @@ const ProjectPage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <FormProject project={project} getProjects={getProjects} />
-                  <span>Hapus </span>
+                  <DeleteProject
+                    projectId={project._id}
+                    getProjects={getProjects}
+                  />
                 </div>
                 <div className="text-right">Manage Job</div>
               </div>
