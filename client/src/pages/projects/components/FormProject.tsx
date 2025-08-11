@@ -33,6 +33,7 @@ import Loading from "@/components/Loading";
 import apiClient from "@/config/axios";
 import { toast } from "sonner";
 import ReactSelect from "react-select";
+import type { Project } from "@/types/type";
 
 interface tagsOptions {
   label: string;
@@ -61,7 +62,11 @@ const formSchema = z
     }
   });
 
-const FormProject = () => {
+interface FormProjectProps {
+  project?: Project;
+}
+
+const FormProject = ({ project }: FormProjectProps) => {
   const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [tags, setTags] = useState<tagsOptions[]>([]);
@@ -93,12 +98,12 @@ const FormProject = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      projectId: null,
-      title: "",
-      description: "",
-      priority: "",
-      tags: [],
-      dueDate: "",
+      projectId: project?._id || null,
+      title: project?.title || "",
+      description: project?.description || "",
+      priority: project?.priority || "low",
+      tags: project?.tags || [],
+      dueDate: project?.dueDate.slice(0, 10) || "",
     },
   });
 
@@ -116,15 +121,20 @@ const FormProject = () => {
   };
 
   useEffect(() => {
-    if (open) {
-      getTags();
-    }
+    if (open) getTags();
   }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Create Project</Button>
+        <Button
+          variant={"ghost"}
+          className={
+            project ? "text-blue-800 hover:bg-white transition-all" : ""
+          }
+        >
+          {project ? "Edit" : "New Project"}
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -206,14 +216,17 @@ const FormProject = () => {
                             isMulti
                             isClearable
                             placeholder="Select tags"
+                            value={tags.filter((tag) =>
+                              field.value.includes(tag.value)
+                            )}
                             onChange={(value) => {
-                              value
-                                ? field.onChange(
-                                    value.map(
+                              field.onChange(
+                                value
+                                  ? value.map(
                                       (item: { value: string }) => item.value
                                     )
-                                  )
-                                : [];
+                                  : []
+                              );
                             }}
                           />
                         </FormControl>
