@@ -114,9 +114,6 @@ const FormProject = ({ project, getProjects }: FormProjectProps) => {
   const handleForm = async (values: z.infer<typeof formSchema>) => {
     setLoading(true);
     try {
-      console.log("Method:", method);
-      console.log("URL:", url);
-
       const { data } = await apiClient[method](url, values);
       toast(data.message);
       setOpen(false);
