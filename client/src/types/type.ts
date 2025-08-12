@@ -1,3 +1,9 @@
+export interface Collabolators {
+  _id: string;
+  name: string;
+  email: string;
+}
+
 export interface Project {
   _id: string;
   title: string;
@@ -6,11 +12,7 @@ export interface Project {
   priority: string;
   completed: string;
   tags: string[];
-  collabolators: {
-    _id: string;
-    name: string;
-    email: string;
-  }[];
+  collabolators: Collabolators[];
   owner: {
     _id: string;
     name: string;

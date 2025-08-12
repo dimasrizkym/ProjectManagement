@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import type { Project } from "@/types/type";
 import {
+  ArrowRight,
   Box,
   CalendarDays,
   CheckCircle,
@@ -14,6 +15,7 @@ import {
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import DeleteProject from "./components/DeleteProject";
+import { Link } from "react-router";
 
 const ProjectPage = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -127,7 +129,15 @@ const ProjectPage = () => {
                     getProjects={getProjects}
                   />
                 </div>
-                <div className="text-right">Manage Job</div>
+                <div className="text-right">
+                  <Link
+                    to={`/manage-jobs/${project._id}`}
+                    className="hover:underline transition-all text-blue-800 flex gap-x-1  items-center"
+                  >
+                    Manage Job
+                    <ArrowRight size={16} />
+                  </Link>
+                </div>
               </div>
             </div>
           </div>

@@ -106,3 +106,38 @@ export const deleteProject = async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
+
+export const getProjectById = async (req, res) => {
+  const { projectId } = req.params;
+
+  try {
+    const project = await Project.findById(projectId);
+
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    const isOwner = project.owner.toString() === req.user._id.toString();
+    const isCollaborator = project.collabolators.some(
+      (collaborator) => collaborator.toString() === req.user._id.toString()
+    );
+
+    if (!isOwner && !isCollaborator) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    await project.populate({
+      path: "collabolators",
+      select: "name email -_id",
+    });
+
+    res
+      .status(200)
+      .json({ message: "Project retrieved successfully", project });
+  } catch (error) {
+    console.log("Error retrieving project:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};

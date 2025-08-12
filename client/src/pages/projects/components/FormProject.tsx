@@ -108,6 +108,17 @@ const FormProject = ({ project, getProjects }: FormProjectProps) => {
     },
   });
 
+  useEffect(() => {
+    form.reset({
+      projectId: project?._id || null,
+      title: project?.title || "",
+      description: project?.description || "",
+      priority: project?.priority || "low",
+      tags: project?.tags || [],
+      dueDate: project?.dueDate ? project.dueDate.slice(0, 10) : "",
+    });
+  }, [project, form.reset]);
+
   const url = project ? `/projects/${project._id}/update` : `/projects`;
   const method = project ? "put" : "post";
 
