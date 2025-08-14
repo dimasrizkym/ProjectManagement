@@ -141,3 +141,43 @@ export const getProjectById = async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
+
+export const deleteCollabolator = async (req, res) => {
+  const { projectId } = req.params;
+  const { email } = req.body;
+
+  try {
+    const project = await Project.findById(projectId).populate([
+      {
+        path: "collabolators",
+        select: "name email",
+      },
+      {
+        path: "owner",
+        select: "name email",
+      },
+    ]);
+
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    if (project.owner.email.toString() === email) {
+      return res.status(400).json({ message: "You cannot remove the owner" });
+    }
+
+    // validate if collabolator have job, collabolator cant be deleted
+    // next
+
+    await project.save();
+
+    res
+      .status(200)
+      .json({ message: "Collabolator deleted successfully", project });
+  } catch (error) {
+    console.log("Error deleting collabolator:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
