@@ -37,12 +37,10 @@ const projecrSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    collabolators: [
-      {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: "User",
-      },
-    ],
+    collabolators: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "User",
+    },
   },
   { timestamps: true }
 );
