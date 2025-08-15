@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { toast } from "sonner";
 import { email, set } from "zod";
+import SendInvitations from "./SendInvitations";
 
 interface ListCollabolatorsProps {
   collabolators: Collabolators[];
@@ -47,6 +48,9 @@ const ListCollabolators = ({
         <div className="flex gap-x-1 items-center">
           <Users size={16} />
           <span>Collabolators</span>
+        </div>
+        <div>
+          <SendInvitations />
         </div>
       </div>
 
