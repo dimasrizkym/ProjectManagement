@@ -22,3 +22,23 @@ export interface Project {
   completedJobsCount: number;
   precentageCompleted: number;
 }
+
+export interface Invitations {
+  _id: string;
+  status: string;
+  receiver: {
+    email: string;
+    name: string;
+    _id: string;
+  };
+  sender: {
+    name: string;
+    email: string;
+  };
+  project: {
+    title: string;
+    description: string;
+    dueDate: string;
+  };
+  createdAt: string;
+}

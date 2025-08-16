@@ -66,3 +66,23 @@ export const sendInvitation = async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
+
+export const getSentInvitations = async (req, res) => {
+  const { projectId } = req.params;
+
+  try {
+    const invitation = await Invitation.find({ project: projectId }).populate({
+      path: "receiver",
+      select: "name email",
+    });
+
+    res
+      .status(200)
+      .json({ message: "Invitations retrieved successfully", invitation });
+  } catch (error) {
+    console.log("Error retrieving invitations:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
