@@ -16,12 +16,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import apiClient from "@/config/axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Send } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router";
-import z, { email } from "zod";
+import { toast } from "sonner";
+import z from "zod";
 
 const formSchema = z.object({
   email: z.string().email().min(1, { message: "Email is required" }),
@@ -40,11 +42,18 @@ const SendInvitations = () => {
   });
 
   const handleSendInvitations = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+    try {
+      const data = await apiClient.post("/invitation/send", values);
+      toast.success(data.data.message);
+      setOpen(false);
+    } catch (error: any) {
+      console.log(error);
+      toast.error(error?.response.data.message);
+    }
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant={"outline"} size={"sm"}>
           <Send size={16} />
@@ -82,7 +91,7 @@ const SendInvitations = () => {
                   <Button
                     type="submit"
                     className="w-full"
-                    disabled={form.formState.isSubmitted}
+                    disabled={form.formState.isSubmitting}
                   >
                     Send Invitation
                   </Button>
