@@ -17,7 +17,6 @@ import { MailCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { toast } from "sonner";
-import { set } from "zod";
 
 const InvitationBox = () => {
   const [open, setOpen] = useState<boolean>(false);
@@ -34,6 +33,19 @@ const InvitationBox = () => {
       setInvitations(data.invitation);
       setLoading(false);
     } catch (error: any) {
+      toast.error(error?.response.data.message);
+    }
+  };
+
+  const cancelInvitation = async (id: string) => {
+    try {
+      const { data } = await apiClient.delete(
+        `/invitation/${id}/cancel-invitation`
+      );
+      toast.success(data.message);
+      getInvitations();
+    } catch (error: any) {
+      console.log(error);
       toast.error(error?.response.data.message);
     }
   };
@@ -82,7 +94,13 @@ const InvitationBox = () => {
                             <Badge className="capitalize">
                               {invitation.status}
                             </Badge>
-                            <Badge variant={"destructive"}>Cancel</Badge>
+                            <Badge
+                              variant={"destructive"}
+                              onClick={() => cancelInvitation(invitation._id)}
+                              className="cursor-pointer capitalize"
+                            >
+                              Cancel
+                            </Badge>
                           </div>
                         </div>
                       </div>
