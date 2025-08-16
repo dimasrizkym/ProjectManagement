@@ -2,6 +2,7 @@ import Invitation from "../models/Invitation.js";
 import Project from "../models/Projects.js";
 import User from "../models/User.js";
 import { sendInvitationValidationSchema } from "../validations/invitationValidation.js";
+import { formatJoiErrors } from "../utils/formatJoiErrors.js";
 
 export const sendInvitation = async (req, res) => {
   const { email, projectId } = req.body;
