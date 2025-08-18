@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 
 const MyInvitationPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
+  const [isSubmited, setIsSubmited] = useState<boolean>(false);
   const [invitations, setInvitations] = useState<Invitations[]>([]);
 
   const getInvitations = async () => {
@@ -40,9 +41,22 @@ const MyInvitationPage = () => {
     return text;
   };
 
-  const handleAction = async (id: string, action: string) => {
+  const handleAction = async (id: string, status: string) => {
+    setIsSubmited(true);
     try {
-    } catch (error: any) {}
+      const { data } = await apiClient.post(`/invitation/confirm`, {
+        invitationId: id,
+        status: status,
+      });
+
+      toast.success(data.message);
+      getInvitations();
+      setIsSubmited(false);
+    } catch (error: any) {
+      console.log(error);
+      toast.error(error?.response.data.message);
+      setIsSubmited(false);
+    }
   };
 
   return (
@@ -90,10 +104,21 @@ const MyInvitationPage = () => {
               )}
             </div>
             <div className="flex justify-between gap-x-1">
-              <Button size="sm" className="w-3/5">
+              <Button
+                size="sm"
+                className="w-3/5"
+                onClick={() => handleAction(invitation._id, "accepted")}
+                disabled={isSubmited}
+              >
                 Accept
               </Button>
-              <Button size="sm" variant="outline" className="w-2/5">
+              <Button
+                size="sm"
+                variant="outline"
+                className="w-2/5"
+                onClick={() => handleAction(invitation._id, "declined")}
+                disabled={isSubmited}
+              >
                 Decline
               </Button>
             </div>
