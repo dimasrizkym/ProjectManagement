@@ -134,3 +134,39 @@ export const myInvitations = async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
+
+export const confirmInvitation = async (req, res) => {
+  const { invitationId, status } = req.body;
+  try {
+    const user = req.user._id;
+
+    const invitation = await Invitation.findById(invitationId);
+    if (!invitation) {
+      return res.status(404).json({ message: "Invitation not found" });
+    }
+
+    const project = await Project.findById(invitation.project);
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    if (project.collabolators.includes(user)) {
+      return res
+        .status(400)
+        .json({ message: "User is already a collabolator of the project" });
+    }
+
+    if (status === "accepted") {
+      project.collabolators.push(user);
+      await project.save();
+    }
+
+    await invitation.deleteOne();
+    res.status(200).json({ message: "Invitation confirmed successfully" });
+  } catch (error) {
+    console.log("Error confirming invitation:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
